@@ -13,6 +13,117 @@
 </head>
 <body style="padding-bottom: 5rem;">
 
+  <!-- Password Gate -->
+  <div id="password-gate" style="
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--background);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+  ">
+    <div style="
+      border: 1px solid var(--border);
+      padding: 3rem 2.5rem;
+      max-width: 400px; width: 90%;
+      text-align: center;
+    ">
+      <div style="font-size: 0.7rem; letter-spacing: 0.2em; color: var(--muted-foreground); margin-bottom: 1.5rem;">
+        GAME PING BOOSTER / ADMIN
+      </div>
+      <h2 style="font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+        RESTRICTED.
+      </h2>
+      <p style="color: var(--muted-foreground); font-size: 0.8rem; margin-bottom: 2rem;">
+        Nhập mật khẩu để truy cập dashboard.
+      </p>
+
+      <div style="position: relative; margin-bottom: 1rem;">
+        <input
+          id="gate-input"
+          type="password"
+          placeholder="Nhập mật khẩu..."
+          autocomplete="current-password"
+          style="
+            width: 100%; box-sizing: border-box;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--foreground);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            padding: 0.85rem 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+          "
+          onkeydown="if(event.key==='Enter') checkPassword()"
+          onfocus="this.style.borderColor='var(--foreground)'"
+          onblur="this.style.borderColor='var(--border)'"
+        />
+      </div>
+
+      <div id="gate-error" style="
+        color: #ef4444; font-size: 0.75rem;
+        margin-bottom: 1rem; min-height: 1.2em;
+      "></div>
+
+      <button
+        onclick="checkPassword()"
+        style="
+          width: 100%;
+          background: var(--foreground);
+          color: var(--background);
+          border: none; cursor: pointer;
+          font-family: var(--font-mono);
+          font-size: 0.75rem;
+          letter-spacing: 0.15em;
+          padding: 0.85rem;
+          transition: opacity 0.2s;
+        "
+        onmouseover="this.style.opacity='0.85'"
+        onmouseout="this.style.opacity='1'"
+      >
+        XÁC NHẬN →
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // SHA-256 hash của mật khẩu — đổi hash này để đổi password
+    // Password mặc định: gpb@admin2024
+    const ADMIN_HASH = 'eb387057ee184e0acf942815a241ca5d32e83162f927ade5edd28221e7e3349e';
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function checkPassword() {
+      const val = document.getElementById('gate-input').value;
+      const hash = await sha256(val);
+      if (hash === ADMIN_HASH) {
+        sessionStorage.setItem('gpb_admin_auth', '1');
+        document.getElementById('password-gate').style.display = 'none';
+        document.body.style.overflow = '';
+      } else {
+        const err = document.getElementById('gate-error');
+        err.textContent = '✗ Sai mật khẩu. Thử lại.';
+        document.getElementById('gate-input').value = '';
+        document.getElementById('gate-input').focus();
+        setTimeout(() => { err.textContent = ''; }, 3000);
+      }
+    }
+
+    // Bỏ qua gate nếu đã auth trong session này
+    if (sessionStorage.getItem('gpb_admin_auth') === '1') {
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('password-gate').style.display = 'none';
+      });
+    } else {
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('gate-input').focus();
+      });
+    }
+  </script>
+
   <!-- Admin Navigation -->
   <header class="navbar">
     <div class="container nav-inner">
