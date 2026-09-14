@@ -3,6 +3,7 @@
   "version": "0.1.8",
   "description": "Minimalist Monochrome Landing Page & Tracking Server for GamePingBooster",
   "scripts": {
+    "build": "echo Static site - no build needed",
     "dev": "npx serve .",
     "start": "npx serve ."
   },
