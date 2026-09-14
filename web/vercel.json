@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "echo 'static'",
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
