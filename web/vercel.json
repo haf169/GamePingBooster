@@ -1,9 +1,12 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
+    { "source": "/activate", "destination": "/activate.html" },
     { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/stats", "destination": "/api/stats.js" },
+    { "source": "/api/track", "destination": "/api/track.js" }
   ],
   "headers": [
     {
