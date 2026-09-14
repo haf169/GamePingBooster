@@ -1,8 +1,10 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    { "source": "/activate", "destination": "/activate.html" },
-    { "source": "/admin", "destination": "/admin.html" }
+  "version": 2,
+  "builds": [
+    { "src": "**/*", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/activate", "dest": "/activate.html" },
+    { "src": "/admin", "dest": "/admin.html" }
   ]
 }
