@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     One entry point for everything done day to day on this project.
 
@@ -704,11 +704,13 @@ switch ($Verb.ToLowerInvariant()) {
         # commercial use. See installer/GamePingBooster.iss.
         $iscc = @(
             "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-            "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+            "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
+            "${env:ProgramFiles(x86)}\Inno Setup 7\ISCC.exe",
+            "$env:ProgramFiles\Inno Setup 7\ISCC.exe"
         ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
         if (-not $iscc) {
-            throw "Inno Setup 6 not found. Install it from https://jrsoftware.org/isdl.php - " +
+            throw "Inno Setup not found. Install it from https://jrsoftware.org/isdl.php - " +
                   "the default location is fine, this looks in Program Files."
         }
 
