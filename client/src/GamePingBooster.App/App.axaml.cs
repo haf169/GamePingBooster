@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -11,8 +11,6 @@ namespace GamePingBooster.App;
 public partial class App : Application
 {
     private PipeClient? _pipe;
-    private TokenRefresher? _refresher;
-    private ProfileSync? _profileSync;
     private UpdateChecker? _updates;
     private SystemTray? _tray;
 
@@ -40,41 +38,27 @@ public partial class App : Application
             var window = new MainWindow { DataContext = vm };
             window.Attach(_pipe);
             desktop.MainWindow = window;
-            // Renews the licence token on its own, at half of its remaining life. It reads what
-            // it needs from the view model rather than holding its own copy, so there is one
-            // answer to "what does this client believe" and it is the one on screen.
-            //
-            // Harmless on a self-hosted installation: with no licence URL and no refresh token
-            // it never sends anything, it just sleeps.
-            _refresher = new TokenRefresher(
-                _pipe,
-                () => vm.LicenceUrl,
-                () => vm.DevicePublicKey,
-                // Marshalled: the refresher reports from its own loop, and raising
-                // PropertyChanged off the UI thread breaks Avalonia's bindings in ways that
-                // surface much later and somewhere else.
-                message => Dispatcher.UIThread.Post(() => vm.LicenceNotice = message));
-            _pipe.StatusReceived += _refresher.OnStatus;
-
-            // Fetches the game list and hands it to the service. In the UI because only the UI
-            // holds the credential the licence server asks for - see ProfileSync.
-            _profileSync = new ProfileSync(
-                _pipe,
-                message => Dispatcher.UIThread.Post(() => vm.LicenceNotice = message));
-            window.AttachProfileSync(_profileSync);
-
-            // One attempt shortly after the service has had time to report its configuration.
-            // Not on the first status push: that arrives before the pipe has settled, and a
-            // fetch that races the connection reports a failure nobody needs to see.
+            // Custom standalone version: no licence refresher needed.
+            // OnFirstStatus triggers auto-connect when the app starts.
             _pipe.StatusReceived += OnFirstStatus;
 
             void OnFirstStatus(Core.Ipc.StatusMessage status)
             {
                 _pipe.StatusReceived -= OnFirstStatus;
-                var written = status.ProfileUpdatedAt is { } unix
-                    ? DateTimeOffset.FromUnixTimeSeconds(unix)
-                    : (DateTimeOffset?)null;
-                _ = _profileSync.SyncAsync(status.LicenceUrl, status.DevicePublicKey, false, written);
+                if (status.State == Core.Ipc.TunnelState.Disconnected && status.Configured)
+                {
+                    Dispatcher.UIThread.Post(async () =>
+                    {
+                        try
+                        {
+                            await vm.ToggleAsync().ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // Best-effort auto-connect
+                        }
+                    });
+                }
             }
 
             // The catch-all: closing the main window is handled in MainWindow.OnClosing,
@@ -113,7 +97,6 @@ public partial class App : Application
             // Start listening to the service. Bringing the tunnel up waits for the user to press
             // the button - the app never rearranges the machine's routing on its own at startup.
             _pipe.Start();
-            _refresher.Start();
 
             // Checks GitHub for a newer release now and then, and puts a line in the menu when
             // there is one. Marshalled for the same reason as the refresher's messages.
@@ -161,7 +144,6 @@ public partial class App : Application
             // area on its own, and the icon left behind is one the user can click.
             _tray?.Dispose();
 
-            if (_refresher is not null) await _refresher.DisposeAsync();
             if (_updates is not null) await _updates.DisposeAsync();
             if (_pipe is not null) await _pipe.DisposeAsync();
         }

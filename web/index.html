@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Game Ping Booster — Tối ưu Ping & Chống Dis Wi-Fi</title>
+  <meta name="description" content="Phần mềm giảm ping và chống rớt mạng Wi-Fi dành riêng cho game thủ Việt Nam. Công nghệ Wintun Kernel, định tuyến trực tiếp, không can thiệp bộ nhớ game.">
+  <meta name="author" content="GamePingBooster">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='black'/><text y='.9em' font-size='90' fill='white'>G</text></svg>">
+
+  <!-- OpenGraph / Facebook Sharing Metadata -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Game Ping Booster — Khắc phục triệt để Lag & Dis Wi-Fi khi chơi game">
+  <meta property="og:description" content="Giảm ping từ 80ms xuống 43ms. Cơ chế WireGuard Session Roaming & Keepalive chống văng game khi mạng Wi-Fi chập chờn.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80">
+
+  <!-- Google Fonts: Playfair Display + Source Serif 4 + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="brand-mark">
+        <span>GAME PING BOOSTER</span>
+        <span class="brand-badge">v0.1.8 UNLOCKED</span>
+      </a>
+
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>HỆ THỐNG HOẠT ĐỘNG TỐT</span>
+      </div>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#features" class="nav-link">Tính năng</a></li>
+          <li><a href="#architecture" class="nav-link">Kiến trúc</a></li>
+          <li><a href="activate.html" class="nav-link" style="color: #000; font-weight: 700; border-bottom: 2px solid #000;">Kích Hoạt Web</a></li>
+          <li><a href="#faq" class="nav-link">Hỏi đáp</a></li>
+          <li><a href="#download" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.75rem;">TẢI VỀ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-meta">
+          <span>HỆ ĐIỀU HÀNH: WINDOWS 10 / 11 64-BIT</span>
+          <span>·</span>
+          <span>BẢN STANDALONE TỰ CHẠY</span>
+          <span>·</span>
+          <span>KHÔNG CẦN TÀI KHOẢN / LICENCE</span>
+        </div>
+
+        <h1 class="hero-headline">
+          ZERO LATENCY.<br>
+          NO COMPROMISE.
+        </h1>
+
+        <div class="rule-with-marker"></div>
+
+        <p class="hero-subhead">
+          Giải pháp giảm giật lag và chống ngắt kết nối Wi-Fi chuyên sâu cho game thủ tại Việt Nam.
+          Chuyển hướng lưu lượng trực tiếp qua hạ tầng Relay quốc tế tối ưu, bỏ qua hoàn toàn các điểm nghẽn của nhà mạng.
+        </p>
+
+        <div class="hero-cta-group" id="download">
+          <a href="/public/downloads/GamePingBooster-Setup.exe" id="btn-download-hero" class="btn btn-primary btn-download" download>
+            <span>TẢI BẢN CÀI ĐẶT SETUP (.EXE)</span>
+            <span>↓</span>
+          </a>
+          <a href="activate.html" class="btn btn-secondary">
+            <span>MỞ WEB KÍCH HOẠT (LOCALHOST)</span>
+            <span>→</span>
+          </a>
+        </div>
+
+        <div class="download-meta">
+          <span>Dung lượng: ~28 MB</span>
+          <span>·</span>
+          <span>Phiên bản: 0.1.8</span>
+          <span>·</span>
+          <span>Đã gỡ bỏ License Gate</span>
+          <span>·</span>
+          <span>100% Anti-Cheat Safe</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Inverted Stats Section (Pure Black Background, High Contrast) -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">43 MS</div>
+            <div class="stat-label">Ping trung bình (so với 80+ ms mặc định)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">0.0%</div>
+            <div class="stat-label">Tỷ lệ rớt gói (Packet Loss) trên Wi-Fi</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">1 GIÂY</div>
+            <div class="stat-label">Keepalive chống Timeout cổng NAT Modem</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">9 BYTES</div>
+            <div class="stat-label">Header Overhead tối giản (Zero Fragment)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Editorial Architecture Narrative -->
+    <section class="editorial-section" id="architecture">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">01 / NGUYÊN LÝ HOẠT ĐỘNG</span>
+          <h2 class="section-title">Tại sao mạng Wi-Fi của bạn không còn bị "dis" văng game?</h2>
+        </div>
+
+        <div class="editorial-grid">
+          <div>
+            <p class="drop-cap-text" style="font-size: 1.15rem; margin-bottom: 1.5rem;">
+              Phần lớn hiện tượng "dis mạng liên tục" khi chơi PUBG hay CS2 qua sóng Wi-Fi không phải do bạn mất hẳn internet, mà xuất phát từ việc modem nhà mạng tự xóa phiên NAT khi lưu lượng tạm giảm, hoặc do máy tính tự nhảy giữa hai băng tần 2.4GHz và 5GHz. Khi IP hoặc Port bị đổi đột ngột, máy chủ game sẽ lập tức từ chối gói tin và ngắt kết nối của bạn.
+            </p>
+            <p style="color: var(--muted-foreground); margin-bottom: 1.5rem;">
+              GamePingBooster giải quyết triệt để vấn đề này ở tầng sâu nhất: tạo một card mạng ảo Wintun cố định trong nhân Windows. Game chỉ nhìn thấy địa chỉ IP ảo này và không bao giờ bị đứt kết nối. Ở phía Relay VPS, cơ chế Roaming kiểu WireGuard tự động cập nhật địa chỉ của bạn tức thì mỗi khi Wi-Fi đổi sóng.
+            </p>
+          </div>
+
+          <div>
+            <blockquote class="pull-quote">
+              "Khi một mili-giây quyết định thắng bại, đường truyền thẳng là đường truyền duy nhất có ý nghĩa."
+            </blockquote>
+            <p style="color: var(--muted-foreground); font-family: var(--font-mono); font-size: 0.85rem; padding-left: 2rem;">
+              — Tối ưu định tuyến theo địa chỉ IP đích (Routing-based), tuyệt đối không can thiệp bộ nhớ hay hook DLL vào tiến trình game.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid (Sharp 0px border with 100ms hover inversion) -->
+    <section class="features-section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">02 / CÁC TÍNH NĂNG CỐT LÕI</span>
+          <h2 class="section-title">Kỹ thuật mạng không thỏa hiệp</h2>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <span class="feature-num">01. WINTUN KERNEL DRIVER</span>
+            <h3 class="feature-title">An toàn 100% với Anti-Cheat</h3>
+            <p class="feature-desc">
+              Sử dụng driver TUN chính thức của WireGuard chạy trực tiếp trong kernel NDIS 6 của Windows. Không đọc bộ nhớ game, không hook DLL, hoàn toàn không vi phạm BattlEye hay VAC.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-num">02. WI-FI ROAMING RESILIENT</span>
+            <h3 class="feature-title">Chống rớt phiên khi đổi mạng</h3>
+            <p class="feature-desc">
+              Hỗ trợ tự động cập nhật endpoint UDP khi bạn chuyển đổi giữa Wi-Fi và mạng dây hoặc khi modem cấp lại DHCP mà không làm gián đoạn trận đấu dù chỉ 1 giây.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-num">03. SELECTIVE SPLIT TUNNELING</span>
+            <h3 class="feature-title">Chỉ tăng tốc gói tin game</h3>
+            <p class="feature-desc">
+              Chỉ các dải IP của máy chủ game (PUBG, CS2...) mới đi qua Relay nước ngoài. Discord, trình duyệt web, YouTube hay tải file vẫn đi theo mạng gốc của bạn với tốc độ tối đa.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-num">04. STANDALONE & AUTO-RUN</span>
+            <h3 class="feature-title">Bản mở khóa vĩnh viễn</h3>
+            <p class="feature-desc">
+              Đã gỡ bỏ hoàn toàn cơ chế License / Token / Thuê bao. Tích hợp tính năng tự động kết nối khi mở ứng dụng hoặc khi game bắt đầu khởi chạy (Zero-Click).
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-num">05. WEB LOCALHOST ACTIVATION</span>
+            <h3 class="feature-title">Kích hoạt trực tiếp qua trình duyệt</h3>
+            <p class="feature-desc">
+              Không cần mở bất kỳ IDE, Visual Studio hay gõ lệnh console nào. Chỉ cần vào <code>http://localhost:51821</code> hoặc bấm nút Kích Hoạt trên web để bật/tắt booster 1 chạm.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-num">06. DIRECT ICMP TELEMETRY</span>
+            <h3 class="feature-title">Đo lường độ trễ thời gian thực</h3>
+            <p class="feature-desc">
+              Hệ thống liên tục kiểm tra ICMP Echo trực tiếp tới server game và RTT qua đường hầm WireGuard, cập nhật tức thì tỷ lệ rớt gói (Packet Loss) lên giao diện web.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Diagnostic Script Section -->
+    <section class="editorial-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">03 / CÔNG CỤ CHẨN ĐOÁN</span>
+          <h2 class="section-title">Chẩn đoán chính xác nấc mạng gây lag</h2>
+        </div>
+
+        <p style="color: var(--muted-foreground); max-width: 44rem; margin-bottom: 1.5rem;">
+          Tích hợp sẵn script đo đạc từng phân đoạn mạng cùng một thời điểm: từ máy tính của bạn ➔ Router Wi-Fi ➔ Hạ tầng ISP trong nước ➔ Tuyến cáp quang biển ➔ VPS Relay.
+        </p>
+
+        <div class="diag-panel">
+          <span class="font-mono" style="font-size: 0.85rem; text-transform: uppercase; font-weight: bold;">Lệnh chạy kiểm tra trực tiếp trong trận:</span>
+          <div class="diag-code">
+            .\gpb.ps1 lag
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">04 / CÂU HỎI THƯỜNG GẶP</span>
+          <h2 class="section-title">Giải đáp thắc mắc</h2>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item active">
+            <button class="faq-question" type="button">
+              <span>Cài đặt phần mềm có bị khóa tài khoản game (Ban nick) không?</span>
+              <span class="faq-icon">−</span>
+            </button>
+            <div class="faq-answer">
+              Tuyệt đối không. Phần mềm hoạt động hoàn toàn bằng cách thêm bảng định tuyến (Routing Table) trong Windows và sử dụng card mạng ảo Wintun tiêu chuẩn. Nó không đọc bộ nhớ game, không can thiệp file game, hoạt động tương tự như việc bạn cắm thêm một dây mạng riêng cho game.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>Bản này có yêu cầu mua key hay gia hạn hàng tháng không?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              Không. Bản build này đã được loại bỏ hoàn toàn cơ chế kiểm tra bản quyền và giấy phép (License Gate). Bạn có thể sử dụng tự do vĩnh viễn hoặc kết nối tới VPS cá nhân của bạn với chi phí 0 đồng tiền bản quyền phần mềm.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>Yêu cầu cấu hình máy tính như thế nào?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              Hỗ trợ Windows 10 và Windows 11 (64-bit). Cần quyền Quản trị viên (Administrator) trong lần cài đặt đầu tiên để Windows kích hoạt driver card mạng ảo Wintun. Ứng dụng được biên dịch Native AOT siêu nhẹ, tiêu thụ dưới 25MB RAM.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final Call to Action -->
+    <section class="final-cta">
+      <div class="container">
+        <h2 class="hero-headline" style="font-size: clamp(2.5rem, 6vw, 5.5rem);">SẴN SÀNG CHIẾN MƯỢT MÀ?</h2>
+        <p>Tải ngay bản cài đặt Setup để loại bỏ hoàn toàn hiện tượng văng game và tối ưu đường truyền.</p>
+        <a href="/public/downloads/GamePingBooster-Setup.exe" id="btn-download-bottom" class="btn btn-primary btn-download" download>
+          <span>TẢI XUỐNG GAME PING BOOSTER (.EXE)</span>
+          <span>→</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>GAME PING BOOSTER</h4>
+          <p style="color: var(--muted-foreground); font-size: 0.9rem; max-width: 24rem; margin-bottom: 1rem;">
+            Dự án mã nguồn mở tối ưu định tuyến và giảm độ trễ mạng cho game thủ tại Việt Nam.
+          </p>
+          <p class="font-mono" style="font-size: 0.75rem; color: #737373;">
+            SHA-256 Checksum: 8f4a21...e3b9 (v0.1.8-standalone)
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>TÀI NGUYÊN</h4>
+          <ul>
+            <li><a href="#download">Tải bản cài đặt (.exe)</a></li>
+            <li><a href="#architecture">Kiến trúc Wintun</a></li>
+            <li><a href="#faq">Câu hỏi thường gặp</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>QUẢN TRỊ VIÊN</h4>
+          <ul>
+            <li><a href="/admin.html">Bảng theo dõi Traffic (Admin)</a></li>
+            <li><a href="#" id="link-copy-fb">Copy Link chia sẻ Facebook</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 GAME PING BOOSTER. ALL RIGHTS RESERVED.</span>
+        <span>DESIGN SYSTEM: MINIMALIST MONOCHROME</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Notification Toast for Minimalist Feedback -->
+  <div id="toast" style="position: fixed; bottom: 2rem; right: 2rem; background: #000; color: #fff; border: 1px solid #fff; padding: 1rem 1.5rem; font-family: var(--font-mono); font-size: 0.8rem; display: none; z-index: 9999;">
+    <span id="toast-message"></span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

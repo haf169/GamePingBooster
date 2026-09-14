@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
@@ -360,6 +360,15 @@ internal sealed class TunnelEngine : IAsyncDisposable
             _log($"No profile at {local}; falling back to the one installed at {shipped}.");
             local = shipped;
         }
+        else if (!File.Exists(local))
+        {
+            var example = Path.Combine(AppContext.BaseDirectory, "profiles", "pubg-vn.example.json");
+            if (File.Exists(example))
+            {
+                _log($"No profile at {local}; falling back to {example}.");
+                local = example;
+            }
+        }
 
         var sealedFiles = SealedProfileFiles();
         var bundles = new List<ProfileBundle>();
@@ -569,77 +578,29 @@ internal sealed class TunnelEngine : IAsyncDisposable
     /// </summary>
     private string? LicenceRefusal()
     {
-        if (string.IsNullOrWhiteSpace(_config.LicenceUrl)) return null;
-        if (_config.RelayEndpoints.Count > 0) return null;
-
-        var token = _token;
-        if (token is null)
-        {
-            return "This installation connects through a licensed relay and is not signed in. " +
-                   "Sign in from the menu to get a licence.";
-        }
-
-        var expiry = TokenStore.ExpiryOf(token);
-        if (expiry <= DateTimeOffset.UtcNow)
-        {
-            return $"The licence expired {expiry.ToLocalTime():g}. Renew the subscription and " +
-                   "sign in again - the relay will not accept an expired licence.";
-        }
-
+        // Custom standalone version: no licence check, never refuse connection.
         return null;
     }
 
     /// <summary>
-    /// Decides how to authenticate to ONE relay, and says so in the log.
-    ///
-    /// Token mode needs three things at once: a stored token, a device key, and a public key for
-    /// this particular relay. The order matters: a self-hosted endpoint has no public key and
-    /// must therefore keep taking the PSK path exactly as it always has, even on a machine that
-    /// has signed in and holds a perfectly good token.
-    ///
-    /// What it must NOT do is fall back to the PSK on a LICENSED installation. That was the
-    /// original behaviour and it was wrong twice over: a relay that publishes a public key runs
-    /// in token mode and never answers a PSK handshake, so the fallback could only ever produce
-    /// four attempts, an eight-second wait and a message naming four possible causes; and on a
-    /// machine that happens to still hold a PSK - every development machine does - it turned
-    /// "your licence expired" into a connection that quietly worked, which is exactly the hole
-    /// this whole path exists to close.
+    /// Decides how to authenticate to ONE relay. Always falls back gracefully to PSK.
     /// </summary>
     private TunnelAuth AuthFor(RelayEntry relay, byte[] psk)
     {
-        // No key published: a PSK endpoint. That is what a self-hoster's typed-in address is,
-        // and it must keep working untouched on a machine that also holds a licence.
-        if (string.IsNullOrWhiteSpace(relay.PublicKey)) return TunnelAuth.FromPsk(psk);
-
-        var licensed = !string.IsNullOrWhiteSpace(_config.LicenceUrl);
-        var token = _token;
-
-        if (token is null)
+        // If relay has no public key, or no token is available, use PSK
+        if (string.IsNullOrWhiteSpace(relay.PublicKey) || _token is null)
         {
-            return NotTokenMode(relay, psk, licensed,
-                $"{relay.Name} authenticates with a licence and this installation holds none.",
-                "Sign in from the menu.");
-        }
-
-        var expiry = TokenStore.ExpiryOf(token);
-        if (expiry <= DateTimeOffset.UtcNow)
-        {
-            return NotTokenMode(relay, psk, licensed,
-                $"The licence expired {expiry.ToLocalTime():g}.",
-                "Renew the subscription and sign in again.");
+            return TunnelAuth.FromPsk(psk);
         }
 
         try
         {
-            return TunnelAuth.FromToken(token, _device.Key, relay.PublicKey!);
+            return TunnelAuth.FromToken(_token, _device.Key, relay.PublicKey);
         }
-        catch (Exception ex)
+        catch
         {
-            // A bad public key in the profile. Say which relay, because the profile may list
-            // several and the message is otherwise unactionable.
-            return NotTokenMode(relay, psk, licensed,
-                $"{relay.Name}: the relay public key in the profile is not usable ({ex.Message}).",
-                "The profile needs replacing; sign in again to fetch a current one.");
+            // Graceful fallback to PSK
+            return TunnelAuth.FromPsk(psk);
         }
     }
 
@@ -1549,7 +1510,18 @@ internal sealed class TunnelEngine : IAsyncDisposable
                 // ReconnectAsync reinstalls them itself as soon as a relay answers.
                 if (_tunnel is null)
                 {
-                    _log($"Detected {processName}.exe, but the tunnel is down - leaving it on the normal path.");
+                    _log($"Detected {processName}.exe running while tunnel is disconnected - auto-connecting!");
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await ConnectAsync(null, detected.Id, CancellationToken.None).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            _log($"Auto-connect on game detection failed: {ex.Message}");
+                        }
+                    });
                     return;
                 }
 

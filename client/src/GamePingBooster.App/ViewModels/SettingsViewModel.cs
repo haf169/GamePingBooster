@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace GamePingBooster.App.ViewModels;
@@ -20,7 +20,7 @@ public sealed class SettingsViewModel : INotifyPropertyChanged
     private readonly bool _alreadyConfigured;
 
     public SettingsViewModel(IEnumerable<string>? currentEndpoints, bool alreadyConfigured,
-        string? currentLicenceUrl = "https://gamepingbooster.com")
+        string? currentLicenceUrl = "")
     {
         _endpoints = string.Join(Environment.NewLine, currentEndpoints ?? []);
         _alreadyConfigured = alreadyConfigured;
@@ -92,8 +92,7 @@ public sealed class SettingsViewModel : INotifyPropertyChanged
     /// weeks and the blank box was refused.
     /// </summary>
     public bool CanSave =>
-        (EndpointList.Count > 0 || !string.IsNullOrWhiteSpace(LicenceUrl)) &&
-        (EndpointList.Count == 0 || _alreadyConfigured || !string.IsNullOrWhiteSpace(Psk));
+        EndpointList.Count > 0 || _alreadyConfigured || !string.IsNullOrWhiteSpace(Psk) || !string.IsNullOrWhiteSpace(LicenceUrl);
 
     private string? _error;
     public string? Error

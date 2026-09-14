@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kích Hoạt Web — Game Ping Booster</title>
+  <meta name="description" content="Trang kích hoạt và quản lý Game Ping Booster trực tiếp trên trình duyệt web, không cần mở IDE hay dòng lệnh terminal.">
+
+  <!-- Typography: Playfair Display + Source Serif 4 + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,800;0,900;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Specific styling for Activation Dashboard adhering strictly to Minimalist Monochrome */
+    .activate-main {
+      padding: 3.5rem 0 5rem;
+    }
+
+    .activate-header-card {
+      border: var(--rule-thick);
+      padding: 2.5rem;
+      background-color: var(--background);
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .activate-header-card.connected-mode {
+      background-color: #000000;
+      color: #FFFFFF;
+    }
+
+    .activate-header-card.connected-mode .activate-meta,
+    .activate-header-card.connected-mode .activate-desc {
+      color: #A3A3A3;
+    }
+
+    .activate-header-card.connected-mode .btn-activate {
+      background-color: #FFFFFF;
+      color: #000000;
+      border-color: #FFFFFF;
+    }
+
+    .activate-header-card.connected-mode .btn-activate:hover {
+      background-color: #000000;
+      color: #FFFFFF;
+    }
+
+    .activate-meta {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .activate-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .activate-desc {
+      font-size: 1.15rem;
+      max-width: 48rem;
+      line-height: 1.5;
+      color: var(--muted-foreground);
+      margin-bottom: 2rem;
+    }
+
+    .btn-activate {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 1.35rem 3rem;
+      border: 3px solid var(--foreground);
+      background-color: var(--foreground);
+      color: var(--background);
+      cursor: pointer;
+      text-decoration: none;
+      transition: none;
+    }
+
+    .btn-activate:hover {
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+
+    .btn-activate.connected {
+      background-color: transparent;
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+
+    .btn-activate.connected:hover {
+      background-color: #FFFFFF;
+      color: #000000;
+    }
+
+    /* Offline Alert Box */
+    .offline-alert-box {
+      border: var(--rule-thick);
+      padding: 3rem 2.5rem;
+      background-color: var(--muted);
+      margin-bottom: 3rem;
+    }
+
+    .offline-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      background: var(--foreground);
+      color: var(--background);
+      display: inline-block;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.1em;
+    }
+
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .step-card {
+      border: var(--rule-thin);
+      padding: 1.75rem;
+      background: var(--background);
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      border-bottom: var(--rule-thin);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      font-size: 0.95rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Metrics Grid */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      border-top: var(--rule-thin);
+      border-left: var(--rule-thin);
+      margin-bottom: 2.5rem;
+    }
+
+    .telemetry-item {
+      border-right: var(--rule-thin);
+      border-bottom: var(--rule-thin);
+      padding: 2rem 1.75rem;
+      background: var(--background);
+    }
+
+    .telemetry-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted-foreground);
+      margin-bottom: 0.5rem;
+    }
+
+    .telemetry-value {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .telemetry-note {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted-foreground);
+      margin-top: 0.5rem;
+    }
+
+    /* Diagnostics Table */
+    .diagnostics-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: var(--rule-thin);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .diagnostics-table td {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .diagnostics-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .diagnostics-table td:first-child {
+      width: 35%;
+      color: var(--muted-foreground);
+      border-right: 1px solid var(--border-light);
+      background-color: #FAFAFA;
+    }
+
+    .pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: var(--foreground);
+    }
+
+    .pulse-dot.pulsing {
+      animation: pulseAnimation 1.2s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseAnimation {
+      0% { opacity: 0.15; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-mark">
+        <span>GAME PING BOOSTER</span>
+        <span class="brand-badge">WEB CONSOLE</span>
+      </a>
+
+      <div class="status-indicator" id="nav-status-indicator">
+        <span class="status-dot" id="nav-status-dot"></span>
+        <span id="nav-status-text">ĐANG DÒ TÌM LOCALHOST...</span>
+      </div>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Trang chủ</a></li>
+          <li><a href="index.html#features" class="nav-link">Tính năng</a></li>
+          <li><a href="activate.html" class="nav-link" style="font-weight: 700; border-bottom: 2px solid var(--foreground);">Kích Hoạt Web</a></li>
+          <li><a href="admin.html" class="nav-link">Admin</a></li>
+          <li><a href="/public/downloads/GamePingBooster-Setup.exe" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.75rem;" download>TẢI VỀ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="activate-main">
+    <div class="container">
+
+      <!-- OFFLINE DETECTED VIEW (Shown when local service is not reachable) -->
+      <section id="offline-view" class="offline-alert-box" style="display: none;">
+        <span class="offline-badge">TRẠNG THÁI: CHƯA PHÁT HIỆN DỊCH VỤ CỤC BỘ</span>
+        <h2 class="activate-title" style="margin-bottom: 1rem;">Bạn Chưa Mở Game Ping Booster Trên Máy Tính Này</h2>
+        <p class="activate-desc">
+          Trang web này điều khiển ứng dụng chạy ngầm trên máy bạn qua cổng cục bộ <code>http://127.0.0.1:51821</code>.
+          Bạn <strong>không cần mở bất kỳ IDE (Visual Studio / VS Code) hay gõ lệnh nào</strong>. Chỉ cần cài đặt và mở app lên là xong!
+        </p>
+
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-num">01</div>
+            <div class="step-title">Tải File Cài Đặt</div>
+            <div class="step-desc">Tải file <code>GamePingBooster-Setup.exe</code> đã được cấu hình tự động (không cần bản quyền hay key).</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">02</div>
+            <div class="step-title">Cài Đặt & Mở Ứng Dụng</div>
+            <div class="step-desc">Chạy file setup. Dịch vụ nền Wintun TUN sẽ tự động đăng ký và chạy ngầm an toàn trên Windows.</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">03</div>
+            <div class="step-title">Kích Hoạt 1 Chạm</div>
+            <div class="step-desc">Quay lại trang này — hệ thống sẽ tự động phát hiện ứng dụng và cho phép bạn bật/tắt booster tức thì.</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+          <a href="/public/downloads/GamePingBooster-Setup.exe" class="btn btn-primary btn-download" download>
+            <span>TẢI BẢN SETUP NGAY (.EXE)</span>
+            <span>↓</span>
+          </a>
+          <button class="btn btn-secondary" onclick="checkLocalService()">
+            <span>THỬ KẾT NỐI LẠI</span>
+            <span>↻</span>
+          </button>
+          <a href="http://localhost:51821" target="_blank" class="btn btn-secondary">
+            <span>MỞ TRỰC TIẾP LOCALHOST:51821</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ONLINE LIVE DASHBOARD VIEW (Shown when local service is reachable) -->
+      <section id="online-view" style="display: none;">
+        <!-- Hero Control Box -->
+        <div class="activate-header-card" id="main-control-card">
+          <div class="activate-meta">
+            <span class="pulse-dot" id="live-pulse-dot"></span>
+            <span id="live-state-meta">DỊCH VỤ CỤC BỘ TRỰC TUYẾN • CỔNG 51821</span>
+          </div>
+
+          <h1 class="activate-title" id="control-heading">Kích Hoạt Tối Ưu Mạng</h1>
+          <p class="activate-desc" id="control-desc">
+            Nhấn nút bên dưới để chuyển hướng lưu lượng mạng game qua card ảo Wintun và cụm Relay giảm ping độ trễ cực thấp.
+          </p>
+
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <button class="btn-activate" id="btn-toggle-booster" onclick="toggleBoosterAction()">
+              <span id="btn-toggle-text">KÍCH HOẠT BOOSTER</span>
+              <span id="btn-toggle-arrow">→</span>
+            </button>
+            <button class="btn btn-secondary" onclick="reloadLocalProfile()">
+              <span>NẠP LẠI PROFILE (RELOAD)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4-Column Live Telemetry -->
+        <div class="telemetry-grid">
+          <div class="telemetry-item">
+            <div class="telemetry-label">Ping Game (Server)</div>
+            <div class="telemetry-value" id="val-game-ping">-- <span style="font-size: 1.25rem;">ms</span></div>
+            <div class="telemetry-note" id="note-game-ping">Đo ICMP tới cụm server game</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-label">Ping Đến Relay</div>
+            <div class="telemetry-value" id="val-relay-ping">-- <span style="font-size: 1.25rem;">ms</span></div>
+            <div class="telemetry-note" id="note-relay-ping">Đường truyền WireGuard trực tiếp</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-label">Packet Loss (Rớt Gói)</div>
+            <div class="telemetry-value" id="val-loss">0.0<span style="font-size: 1.25rem;">%</span></div>
+            <div class="telemetry-note">Khắc phục triệt để Wi-Fi Drop</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-label">Game Đang Chạy</div>
+            <div class="telemetry-value" id="val-game" style="font-size: 1.5rem; word-break: break-word;">Chờ Game...</div>
+            <div class="telemetry-note" id="note-game">Tự động nhận diện tiến trình</div>
+          </div>
+        </div>
+
+        <!-- System Details Table -->
+        <h2 style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 1rem; font-weight: 800;">
+          Thông Số Kỹ Thuật Định Tuyến (Routing Details)
+        </h2>
+        <table class="diagnostics-table">
+          <tr>
+            <td>TRẠNG THÁI TUNNEL</td>
+            <td id="diag-state">Đang kiểm tra...</td>
+          </tr>
+          <tr>
+            <td>THÔNG BÁO CHI TIẾT</td>
+            <td id="diag-detail">--</td>
+          </tr>
+          <tr>
+            <td>MÁY CHỦ RELAY HIỆN TẠI</td>
+            <td id="diag-relay">--</td>
+          </tr>
+          <tr>
+            <td>DẢI IP ĐANG ĐỊNH TUYẾN</td>
+            <td id="diag-routes">0 dải IP định tuyến qua adapter Wintun</td>
+          </tr>
+          <tr>
+            <td>TỔNG LƯU LƯỢNG GÓI TIN</td>
+            <td id="diag-packets">Gửi: 0 gói | Nhận: 0 gói</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- INITIAL SCANNING VIEW -->
+      <section id="scanning-view" style="padding: 5rem 0; text-align: center;">
+        <div class="pulse-dot pulsing" style="width: 16px; height: 16px; margin-bottom: 1.5rem;"></div>
+        <h2 style="font-family: var(--font-display); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">
+          Đang Tìm Kiếm Game Ping Booster Trên Máy Của Bạn...
+        </h2>
+        <p style="color: var(--muted-foreground); font-family: var(--font-mono); font-size: 0.9rem;">
+          Kiểm tra cổng kết nối an toàn <code>http://127.0.0.1:51821</code>
+        </p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <div>GAME PING BOOSTER — BẢN LOCALHOST TỰ CHẠY</div>
+      <div>KHÔNG CẦN IDE • TOÀN QUYỀN ĐIỀU KHIỂN</div>
+    </div>
+  </footer>
+
+  <script>
+    // Configuration: API address for local booster service
+    const LOCAL_API = 'http://127.0.0.1:51821';
+    let isConnectedToService = false;
+    let isBusy = false;
+    let lastState = null;
+
+    const scanningView = document.getElementById('scanning-view');
+    const offlineView = document.getElementById('offline-view');
+    const onlineView = document.getElementById('online-view');
+
+    const navStatusDot = document.getElementById('nav-status-dot');
+    const navStatusText = document.getElementById('nav-status-text');
+
+    async function checkLocalService() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1800);
+
+        const res = await fetch(`${LOCAL_API}/api/status`, {
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error('Bad response');
+        const data = await res.json();
+
+        // If we reach here, local service is running!
+        if (!isConnectedToService) {
+          isConnectedToService = true;
+          scanningView.style.display = 'none';
+          offlineView.style.display = 'none';
+          onlineView.style.display = 'block';
+        }
+
+        renderTelemetry(data);
+      } catch (err) {
+        // Service is offline or not installed
+        if (isConnectedToService || scanningView.style.display !== 'none') {
+          isConnectedToService = false;
+          scanningView.style.display = 'none';
+          offlineView.style.display = 'block';
+          onlineView.style.display = 'none';
+
+          navStatusDot.style.background = '#888888';
+          navStatusText.textContent = 'CHƯA MỞ APP (OFFLINE)';
+        }
+      }
+    }
+
+    function renderTelemetry(data) {
+      lastState = data.state;
+      // TunnelState: 0=Disconnected, 1=Connecting, 2=Connected, 3=Reconnecting, 4=Faulted
+      const stateNames = [
+        'CHƯA KÍCH HOẠT (DISCONNECTED)',
+        'ĐANG THIẾT LẬP (CONNECTING)',
+        'ĐANG TỐI ƯU (CONNECTED)',
+        'ĐANG KẾT NỐI LẠI (RECONNECTING)',
+        'LỖI THIẾT LẬP (FAULTED)'
+      ];
+      const stateStr = stateNames[data.state] || 'CHƯA XÁC ĐỊNH';
+
+      const card = document.getElementById('main-control-card');
+      const heading = document.getElementById('control-heading');
+      const desc = document.getElementById('control-desc');
+      const btnToggle = document.getElementById('btn-toggle-booster');
+      const btnText = document.getElementById('btn-toggle-text');
+      const btnArrow = document.getElementById('btn-toggle-arrow');
+      const livePulse = document.getElementById('live-pulse-dot');
+      const liveMeta = document.getElementById('live-state-meta');
+
+      navStatusDot.style.background = '#000000';
+      navStatusText.textContent = `DỊCH VỤ HOẠT ĐỘNG: ${stateStr}`;
+
+      if (data.state === 2) { // Connected
+        card.className = 'activate-header-card connected-mode';
+        heading.textContent = 'Booster Đang Hoạt Động';
+        desc.textContent = 'Toàn bộ lưu lượng gói tin game đang được tăng tốc qua máy chủ Relay chuyên dụng. Bạn có thể bắt đầu chơi game!';
+        btnToggle.className = 'btn-activate connected';
+        btnText.textContent = 'NGẮT KẾT NỐI BOOSTER';
+        btnArrow.textContent = '✕';
+        livePulse.style.background = '#FFFFFF';
+        livePulse.classList.remove('pulsing');
+        liveMeta.textContent = 'ĐANG TỐI ƯU HOÁ ĐƯỜNG TRUYỀN • WINTUN ACTIVE';
+      } else if (data.state === 1 || data.state === 3) { // Connecting
+        card.className = 'activate-header-card';
+        heading.textContent = 'Đang Thiết Lập Đường Truyền...';
+        desc.textContent = 'Đang bắt tay mã hoá WireGuard và cấu hình bảng định tuyến Windows route...';
+        btnToggle.className = 'btn-activate';
+        btnText.textContent = 'ĐANG KẾT NỐI...';
+        btnArrow.textContent = '⟳';
+        livePulse.style.background = '#000000';
+        livePulse.classList.add('pulsing');
+        liveMeta.textContent = 'ĐANG KẾT NỐI TỚI RELAY SERVER...';
+      } else { // Disconnected / Faulted
+        card.className = 'activate-header-card';
+        heading.textContent = 'Sẵn Sàng Kích Hoạt Tối Ưu';
+        desc.textContent = 'Nhấn nút bên dưới để chuyển hướng lưu lượng mạng game qua card ảo Wintun và cụm Relay giảm ping độ trễ cực thấp.';
+        btnToggle.className = 'btn-activate';
+        btnText.textContent = 'KÍCH HOẠT BOOSTER NGAY';
+        btnArrow.textContent = '→';
+        livePulse.style.background = '#888888';
+        livePulse.classList.remove('pulsing');
+        liveMeta.textContent = 'DỊCH VỤ CỤC BỘ SẴN SÀNG • CỔNG 51821';
+      }
+
+      // Telemetry Cards
+      if (data.gamePingMs !== null && data.gamePingMs !== undefined) {
+        document.getElementById('val-game-ping').innerHTML = `${Math.round(data.gamePingMs)} <span style="font-size: 1.25rem;">ms</span>`;
+        document.getElementById('note-game-ping').textContent = data.gamePingDirect ? 'Direct ICMP Game Echo' : 'Ước tính qua landmark';
+      } else {
+        document.getElementById('val-game-ping').innerHTML = `-- <span style="font-size: 1.25rem;">ms</span>`;
+        document.getElementById('note-game-ping').textContent = 'Chưa nhận phản hồi ping';
+      }
+
+      if (data.tunnelPingMs !== null && data.tunnelPingMs !== undefined) {
+        document.getElementById('val-relay-ping').innerHTML = `${Math.round(data.tunnelPingMs)} <span style="font-size: 1.25rem;">ms</span>`;
+      } else {
+        document.getElementById('val-relay-ping').innerHTML = `-- <span style="font-size: 1.25rem;">ms</span>`;
+      }
+
+      if (data.lossRatio !== null && data.lossRatio !== undefined) {
+        document.getElementById('val-loss').innerHTML = `${(data.lossRatio * 100).toFixed(1)}<span style="font-size: 1.25rem;">%</span>`;
+      } else {
+        document.getElementById('val-loss').innerHTML = `0.0<span style="font-size: 1.25rem;">%</span>`;
+      }
+
+      if (data.gameRunning && data.gameName) {
+        document.getElementById('val-game').textContent = data.gameName;
+        document.getElementById('note-game').textContent = `Đang chơi • ${data.gameRegionName || 'Tối ưu tự động'}`;
+      } else {
+        document.getElementById('val-game').textContent = 'Chờ vào game...';
+        document.getElementById('note-game').textContent = 'Tự động kích hoạt khi mở game';
+      }
+
+      // Diagnostics table
+      document.getElementById('diag-state').textContent = stateStr;
+      document.getElementById('diag-detail').textContent = data.detail || 'Hoạt động bình thường.';
+      document.getElementById('diag-relay').textContent = data.relayName 
+        ? `${data.relayName} (${data.relayAddress || 'Auto'})` 
+        : (data.relayEndpoints && data.relayEndpoints.length ? data.relayEndpoints.join(', ') : 'Mặc định (Auto)');
+      document.getElementById('diag-routes').textContent = `${data.activeRoutes || 0} dải IP đang được định tuyến qua adapter Wintun`;
+      document.getElementById('diag-packets').textContent = `Gửi: ${(data.packetsSent || 0).toLocaleString()} gói | Nhận: ${(data.packetsReceived || 0).toLocaleString()} gói`;
+    }
+
+    async function toggleBoosterAction() {
+      if (isBusy) return;
+      isBusy = true;
+      try {
+        await fetch(`${LOCAL_API}/api/toggle`, { method: 'POST' });
+        await checkLocalService();
+      } catch (err) {
+        alert('Lỗi gửi lệnh điều khiển tới booster cục bộ: ' + err.message);
+      } finally {
+        isBusy = false;
+      }
+    }
+
+    async function reloadLocalProfile() {
+      try {
+        const res = await fetch(`${LOCAL_API}/api/reload-profile`, { method: 'POST' });
+        if (res.ok) {
+          alert('Đã nạp lại danh sách profile dải game thành công!');
+          await checkLocalService();
+        } else {
+          alert('Nạp lại profile thất bại.');
+        }
+      } catch (err) {
+        alert('Lỗi: ' + err.message);
+      }
+    }
+
+    // Start polling immediately and then every 1.5 seconds
+    checkLocalService();
+    setInterval(checkLocalService, 1500);
+  </script>
+</body>
+</html>

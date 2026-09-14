@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -94,7 +94,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    public bool LicenceBlocked => !string.IsNullOrWhiteSpace(LicenceRefusal);
+    public bool LicenceBlocked => false;
 
     /// <summary>
     /// The licence line is normally a quiet footnote and should stay one - "signed in, valid
@@ -109,8 +109,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public IBrush LicenceBrush => LicenceBlocked ? Brushes.Orange : LicenceQuiet;
 
-    /// <summary>Whether this installation has a licence server at all.</summary>
-    public bool ShowLicence => !string.IsNullOrWhiteSpace(LicenceUrl);
+    /// <summary>Standalone custom version: no licence server.</summary>
+    public bool ShowLicence => false;
 
     /// <summary>What the menu item says. One entry, two states, no dead end either way.</summary>
     public string AccountMenuText => HasToken ? "Account" : "Sign in";
@@ -381,8 +381,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     // available. A licence that lapses while a tunnel is up must not trap the user in a session
     // they cannot end - the session was authorised when it started, and the button that ends it
     // has nothing to do with the licence.
-    public bool CanPressAction => !IsBusy && Configured
-        && (State is TunnelState.Connected or TunnelState.Connecting || !LicenceBlocked);
+    public bool CanPressAction => !IsBusy && Configured;
 
     /// <summary>
     /// The headline: what the game is expected to show, and where.

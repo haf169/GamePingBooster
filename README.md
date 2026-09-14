@@ -8,6 +8,8 @@ adapter plus entries in the Windows routing table: destinations belonging to the
 the tunnel, everything else keeps using the normal path. Detecting that the game is running means
 listing processes, exactly as Task Manager does.
 
+.\gpb.ps1 dev
+
 ## Layout
 
 ```

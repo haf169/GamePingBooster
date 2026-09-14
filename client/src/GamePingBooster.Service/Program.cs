@@ -1,4 +1,4 @@
-﻿using System.ServiceProcess;
+using System.ServiceProcess;
 using GamePingBooster.Service.Ipc;
 using GamePingBooster.Service.Tunnel;
 
@@ -129,9 +129,15 @@ public static class Program
         }
 
         var pipe = new PipeServer(engine, log);
+        var web = new LocalWebServer(engine, log);
 
         log($"Listening on pipe \\\\.\\pipe\\{Core.Ipc.IpcConstants.PipeName}");
-        await pipe.RunAsync(ct).ConfigureAwait(false);
+        log($"Listening on local web http://127.0.0.1:{LocalWebServer.DefaultPort}/ and http://localhost:{LocalWebServer.DefaultPort}/");
+
+        await Task.WhenAll(
+            pipe.RunAsync(ct),
+            web.RunAsync(ct)
+        ).ConfigureAwait(false);
     }
 }
 

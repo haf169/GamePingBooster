@@ -1,4 +1,4 @@
-﻿using System.IO.Pipes;
+using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
@@ -310,26 +310,40 @@ internal sealed class PipeServer
     /// </summary>
     private static NamedPipeServerStream CreatePipe()
     {
-        var security = new PipeSecurity();
+        try
+        {
+            var security = new PipeSecurity();
 
-        var users = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
-        security.AddAccessRule(new PipeAccessRule(users,
-            PipeAccessRights.ReadWrite | PipeAccessRights.Synchronize, AccessControlType.Allow));
+            var users = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+            security.AddAccessRule(new PipeAccessRule(users,
+                PipeAccessRights.ReadWrite | PipeAccessRights.Synchronize, AccessControlType.Allow));
 
-        var system = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
-        security.AddAccessRule(new PipeAccessRule(system, PipeAccessRights.FullControl, AccessControlType.Allow));
+            var system = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+            security.AddAccessRule(new PipeAccessRule(system, PipeAccessRights.FullControl, AccessControlType.Allow));
 
-        var admins = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
-        security.AddAccessRule(new PipeAccessRule(admins, PipeAccessRights.FullControl, AccessControlType.Allow));
+            var admins = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
+            security.AddAccessRule(new PipeAccessRule(admins, PipeAccessRights.FullControl, AccessControlType.Allow));
 
-        return NamedPipeServerStreamAcl.Create(
-            IpcConstants.PipeName,
-            PipeDirection.InOut,
-            maxNumberOfServerInstances: 1,
-            PipeTransmissionMode.Byte,
-            PipeOptions.Asynchronous,
-            inBufferSize: 4096,
-            outBufferSize: 4096,
-            security);
+            return NamedPipeServerStreamAcl.Create(
+                IpcConstants.PipeName,
+                PipeDirection.InOut,
+                maxNumberOfServerInstances: 1,
+                PipeTransmissionMode.Byte,
+                PipeOptions.Asynchronous,
+                inBufferSize: 4096,
+                outBufferSize: 4096,
+                security);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return new NamedPipeServerStream(
+                IpcConstants.PipeName,
+                PipeDirection.InOut,
+                maxNumberOfServerInstances: 1,
+                PipeTransmissionMode.Byte,
+                PipeOptions.Asynchronous,
+                inBufferSize: 4096,
+                outBufferSize: 4096);
+        }
     }
 }

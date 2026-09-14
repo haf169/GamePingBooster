@@ -1,0 +1,13 @@
+{
+  "name": "gamepingbooster-web",
+  "version": "0.1.8",
+  "description": "Minimalist Monochrome Landing Page & Tracking Server for GamePingBooster",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

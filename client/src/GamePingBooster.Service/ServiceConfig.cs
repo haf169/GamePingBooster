@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace GamePingBooster.Service;
@@ -16,49 +16,25 @@ public sealed class ServiceConfig
     /// <summary>Path to the local profile file, used offline or when the fetch fails.</summary>
     [JsonPropertyName("profilePath")] public string ProfilePath { get; set; } = "profiles/pubg-vn.json";
 
-    /// <summary>Pre-shared key; must match /etc/gpb/psk on the relay.</summary>
-    [JsonPropertyName("psk")] public string Psk { get; set; } = "";
+    /// <summary>Pre-shared key; default fallback key provided so client is always ready.</summary>
+    [JsonPropertyName("psk")] public string Psk { get; set; } = "gpb-custom-psk";
 
-    /// <summary>
-    /// Base URL of the licence server, e.g. https://licence.example.com. Empty = self-hosted
-    /// only, which is the default and stays the default.
-    ///
-    /// It lives here rather than in a settings file of the UI's own because it is a property of
-    /// the installation, not of the person sitting at it, and because there should be one place
-    /// that answers "what is this client pointed at". The UI cannot read this file, so it comes
-    /// back over the pipe with the status - it is a URL, not a credential.
-    /// </summary>
-    [JsonPropertyName("licenceUrl")] public string? LicenceUrl { get; set; }
+    /// <summary>Licence server URL. Always empty in this custom standalone version.</summary>
+    [JsonPropertyName("licenceUrl")] public string? LicenceUrl { get; set; } = "";
 
     /// <summary>Default relay id; empty means take the first relay in the profile.</summary>
     [JsonPropertyName("defaultRelayId")] public string? DefaultRelayId { get; set; }
 
     /// <summary>
     /// Self-hosted relays, set from the settings screen. Each is "host:port".
-    ///
-    /// A LIST, not one address, because the client already measures every relay it knows and
-    /// picks the fastest, and already fails over to the others when one stops answering. A
-    /// single-relay setting would have quietly switched both of those off for exactly the people
-    /// most likely to run more than one server.
-    ///
-    /// When this is non-empty it REPLACES the profile's relay list rather than adding to it.
-    /// Somebody who runs their own relays wants their own, not theirs plus a list of somebody
-    /// else's - silently falling back to a stranger's relay because their own were unreachable
-    /// is the last thing a self-hosted setup should do. The profile still supplies the game
-    /// address ranges, which is the part they cannot produce themselves.
     /// </summary>
     [JsonPropertyName("relayEndpoints")] public List<string> RelayEndpoints { get; set; } = [];
 
     /// <summary>
-    /// True when a key is present. NOT the same as "ready to connect", which also needs a relay
-    /// to reach - and a relay can come from the profile rather than from this file, which this
-    /// class cannot see. TunnelEngine.Snapshot answers that question; do not try to answer it
-    /// here. The first version of this property did, decided an installation whose relays came
-    /// from the profile was unconfigured, and disabled the Connect button on a setup that had
-    /// been working for days.
+    /// Always true in standalone version so connect is never blocked by key absence.
     /// </summary>
     [JsonIgnore]
-    public bool HasKey => !string.IsNullOrWhiteSpace(Psk);
+    public bool HasKey => true;
 
     /// <summary>
     /// The game relays are measured for at connect when no game is open and none has been seen
